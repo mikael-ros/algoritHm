@@ -1,27 +1,30 @@
 module Graph where
 
     -- Node --
-    newtype Node = Node {
-        nid :: Integer
-    } deriving (Eq)
+    data Node t = Node {
+        content :: t
+    } 
 
-    instance Show Node where
-        show node = show $ nid node
+    instance Show t => Show (Node t) where
+        show node = show $ content node
+
+    instance Eq t => Eq (Node t) where
+        (==) (Node a) (Node b) = a == b
     ---------------------
     -- Edge --
-    data Edge = Edge {
-        src :: Node,
-        end :: Node
+    data Edge t = Edge {
+        src :: Node t,
+        end :: Node t
     }
 
     -- Short-hand constructor for edge
-    (<->) :: Node -> Node -> Edge
+    (<->) :: Node t -> Node t -> Edge t
     (<->) node1 node2 = Edge node1 node2
 
-    instance Show Edge where
+    instance Show t => Show (Edge t) where
         show edge = show (src edge) ++ " <-> " ++ show (end edge)
 
-    instance Eq Edge where
+    instance Eq t => Eq (Edge t) where
         (==) (Edge a aa) (Edge b bb) = a == b && aa == bb
     -----------------------------------------------------------
     -- Graph --
@@ -29,4 +32,23 @@ module Graph where
         This graph is implemented in an adjacencylist structure
     -}
 
-    --data Graph = 
+    type AdjacencyList t = (Node t, [Edge t])
+
+    data Graph t = Graph {
+        adjacencies :: [AdjacencyList t],
+        nodes :: [Node t],
+        edges :: [Edge t]
+    }
+
+    constructGraph :: Eq t => [Edge t] -> Graph t
+    constructGraph edges = Graph adjacencies nodes edges
+        where 
+            nodes = removeDuplicates $ concatMap (\e -> [src e, end e]) edges
+            adjacencies = map (\node -> (node, [nedges | nedges <- edges, (src nedges) == node])) nodes
+
+    removeDuplicates :: Eq a => [a] -> [a]
+    removeDuplicates [] = []
+    removeDuplicates (x:xs) = x : removeDuplicates (filter (/= x) xs)
+                                
+    instance Show t => Show (Graph t) where
+        show graph = foldl (\acc edge -> if not (null acc) then acc ++ " :: " ++ edge else edge) [] $ map show (edges graph) -- a <-> b :: c <-> d :: ... :: y <-> z --

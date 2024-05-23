@@ -2,7 +2,7 @@ module GraphTest where
     import Test.HUnit
     import Graph
     
-    testNode = nid (Node 2) ~?= 2
+    testNode = content (Node 2) ~?= 2
 
     node1 = Node 1
     node2 = Node 2
@@ -11,6 +11,8 @@ module GraphTest where
     edge2 = node1 <-> node2
     edge3 = node2 <-> node1
 
+    testEdges = [edge1, edge2, edge3]
+
     testEdge =
         TestList [
             edge1 == edge2 ~?= True,
@@ -18,10 +20,23 @@ module GraphTest where
             show edge1 ~?= "1 <-> 2"
         ]
 
+    graph = Graph [(node1, [edge1, edge2]), (node2, [edge3])] [node1, node2] testEdges
+    graph2 = constructGraph testEdges
+
+    testGraph =
+        TestList [
+            show graph ~?= "1 <-> 2 :: 1 <-> 2 :: 2 <-> 1",
+            show graph == show graph2 ~?= True,
+            nodes graph == nodes graph2 ~?= True,
+            edges graph == edges graph2 ~?= True
+        ]
+
+
     testsGraph =
         TestList [
             testNode,
-            testEdge
+            testEdge,
+            testGraph
         ]
         
     main = runTestTT testsGraph

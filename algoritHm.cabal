@@ -34,6 +34,7 @@ library
   build-depends:
       HUnit
     , base >=4.7 && <5
+    , containers
   default-language: Haskell2010
 
 executable algoritHm-exe
@@ -48,6 +49,7 @@ executable algoritHm-exe
       HUnit
     , algoritHm
     , base >=4.7 && <5
+    , containers
   default-language: Haskell2010
 
 test-suite algoritHm-test
@@ -64,4 +66,5 @@ test-suite algoritHm-test
       HUnit
     , algoritHm
     , base >=4.7 && <5
+    , containers
   default-language: Haskell2010
