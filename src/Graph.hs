@@ -3,7 +3,10 @@ module Graph where
     -- Node --
     data Node t = Node {
         content :: t
-    } 
+    }
+
+    (¤) :: t -> Node t
+    (¤) content = Node content
 
     instance Show t => Show (Node t) where
         show node = show $ content node
@@ -40,6 +43,12 @@ module Graph where
         edges :: [Edge t]
     }
 
+    constructUndirectedGraph :: Eq t => [Edge t] -> Graph t
+    constructUndirectedGraph edges = Graph adjacencies nodes edges
+        where 
+            nodes = removeDuplicates $ concatMap (\e -> [src e, end e]) edges
+            adjacencies = map (\node -> (node, [nedges | nedges <- edges, node `elem` [src nedges, end nedges]])) nodes
+
     constructGraph :: Eq t => [Edge t] -> Graph t
     constructGraph edges = Graph adjacencies nodes edges
         where 
@@ -52,3 +61,20 @@ module Graph where
                                 
     instance Show t => Show (Graph t) where
         show graph = foldl (\acc edge -> if not (null acc) then acc ++ " :: " ++ edge else edge) [] $ map show (edges graph) -- a <-> b :: c <-> d :: ... :: y <-> z --
+
+    --tupleLookup :: [(k,v)] -> k -> v
+    tupleLookup tupleList key  = head $ filter (\tuple -> fst tuple == key) tupleList
+
+    --adjacency :: Graph t -> Node t -> AdjacencyList t
+    adjacency graph node = tupleLookup (adjacencies graph) node
+
+    getNodes :: AdjacencyList t -> [Node t]
+    getNodes adjacencies = map (end) (snd adjacencies)
+
+    -------------------------------------------------------------
+    -- Path --
+    type Path t = [Node t]
+    type PathMap t = (Node t, Path t)
+
+    nopath :: Path t
+    nopath = []

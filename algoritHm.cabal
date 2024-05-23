@@ -24,6 +24,7 @@ source-repository head
 
 library
   exposed-modules:
+      Algorithms.Pathfinding.BreadthFirstSearch
       Graph
   other-modules:
       Paths_algoritHm
@@ -56,6 +57,7 @@ test-suite algoritHm-test
   type: exitcode-stdio-1.0
   main-is: Tests.hs
   other-modules:
+      Algorithms.Pathfinding.BreadthFirstSearchTest
       GraphTest
       Paths_algoritHm
   autogen-modules:
